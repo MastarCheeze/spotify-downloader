@@ -5,6 +5,8 @@ import os
 
 load_dotenv()
 DOWNLOAD_DIR = os.getenv("DOWNLOAD_DIR")
+HOST = os.getenv("HOST", "127.0.0.1")
+PORT = int(os.getenv("PORT", "8000"))
 
 app = Flask(__name__)
 
@@ -45,4 +47,4 @@ def download():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host=HOST, port=PORT, debug=True)
