@@ -11,7 +11,7 @@ app = Flask(__name__)
 
 @app.route("/api/status")
 def status():
-    return jsonify({"success": True}), 200
+    return jsonify({}), 200
 
 
 @app.route("/api/download", methods=["POST"])
@@ -20,7 +20,7 @@ def download():
     spotify_url = data.get("url")
 
     if not spotify_url:
-        return jsonify({"success": False, "error": "No URL provided"}), 400
+        return jsonify({"message": "No URL provided"}), 400
 
     command = [
         "spotdl",
@@ -35,13 +35,11 @@ def download():
             command, capture_output=True, text=True, check=True)
         print(result)
         return jsonify({
-            "success": True,
             "message": "Track downloaded"
         }), 200
     except subprocess.CalledProcessError as err:
         return jsonify({
-            "success": False,
-            "error": "Failed to download track",
+            "message": "Failed to download track",
             "details": err.stderr
         }), 500
 
