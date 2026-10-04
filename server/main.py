@@ -8,6 +8,7 @@ HOST = "0.0.0.0"
 PORT = 8000
 DOWNLOAD_DIR = "./downloads"
 DOWNLOAD_FILENAME = os.getenv("DOWNLOAD_FILENAME", "{artist} - {title}")
+DEBUG = True if os.getenv("DEBUG") == "1" else False
 
 app = Flask(__name__)
 
@@ -67,4 +68,4 @@ def download():
 
 
 if __name__ == "__main__":
-    app.run(host=HOST, port=PORT, debug=True)
+    app.run(host=HOST, port=PORT, debug=DEBUG)
