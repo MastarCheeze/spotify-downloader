@@ -66,19 +66,25 @@
       font-size: 14px;
       font-weight: bold;
       cursor: pointer;
+      opacity: 1;
       transition: all 0.15s cubic-bezier(0.3, 0, 0, 1);
     }
 
-    #spotify-downloader-btn:hover {
+    #spotify-downloader-btn.enabled:hover {
       transform: scale(1.01);
       color: #ffffff;
       border-color: #ffffff;
     }
 
-    #spotify-downloader-btn:active {
+    #spotify-downloader-btn.enabled:active {
       transform: scale(0.99);
       color: #b3b3b3;
       border-color: #b3b3b3;
+    }
+
+    #spotify-downloader-btn.disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
   `);
 
@@ -92,16 +98,30 @@
     const button = document.createElement("button");
     button.id = "spotify-downloader-btn";
     button.innerText = "⬇ Download on Server";
+    button.className = "enabled";
 
     button.addEventListener("click", () => {
-      sendDownloadRequest(window.location.href);
+      if (button.dataset.loading === "true") return;
+      button.dataset.loading = "true";
+      button.innerText = "⏳ Downloading...";
+      button.className = "disabled";
+
+      sendDownloadRequest(window.location.href, (success) => {
+        if (success) {
+          button.innerText = "✅ Downloaded";
+        } else {
+          button.dataset.loading = "false";
+          button.innerText = "⬇ Download on Server";
+          button.className = "enabled";
+        }
+      });
     });
 
     actionsEl.appendChild(button);
   }
 
   // Trigger download on server
-  function sendDownloadRequest(url) {
+  function sendDownloadRequest(url, callback) {
     if (!getServerUrl()) {
       error(
         "Server url not set",
@@ -128,6 +148,7 @@
         if (res.status >= 200 && res.status < 300) {
           const data = JSON.parse(res.responseText);
           notify(data.message, data.track);
+          if (callback) callback(true);
         } else {
           try {
             const data = JSON.parse(res.responseText);
@@ -135,13 +156,16 @@
           } catch {
             error(`Error ${res.status}`, res.responseText);
           }
+          if (callback) callback(false);
         }
       },
       onerror: function (res) {
         error("Network error", res.responseText);
+        if (callback) callback(false);
       },
       ontimeout: function (res) {
         error("Request timed out", res.responseText);
+        if (callback) callback(false);
       },
     });
   }
@@ -158,7 +182,6 @@
     GM_notification({
       title: title,
       text: text,
-      url: "https:/spotify.com/",
     });
   }
 
