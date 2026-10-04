@@ -4,8 +4,8 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
-HOST = os.getenv("HOST", "127.0.0.1")
-PORT = int(os.getenv("PORT", "8000"))
+HOST = "0.0.0.0"
+PORT = 8000
 DOWNLOAD_DIR = os.getenv("DOWNLOAD_DIR", ".")
 DOWNLOAD_FILENAME = os.getenv("DOWNLOAD_FILENAME", "{artist} - {title}")
 
@@ -14,7 +14,7 @@ app = Flask(__name__)
 
 @app.route("/api/status")
 def status():
-    return jsonify({}), 200
+    return "", 200
 
 
 @app.route("/api/download", methods=["POST"])
