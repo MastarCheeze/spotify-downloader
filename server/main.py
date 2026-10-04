@@ -4,9 +4,10 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
-DOWNLOAD_DIR = os.getenv("DOWNLOAD_DIR")
 HOST = os.getenv("HOST", "127.0.0.1")
 PORT = int(os.getenv("PORT", "8000"))
+DOWNLOAD_DIR = os.getenv("DOWNLOAD_DIR", ".")
+DOWNLOAD_FILENAME = os.getenv("DOWNLOAD_FILENAME", "{artist} - {title}")
 
 app = Flask(__name__)
 
@@ -29,7 +30,7 @@ def download():
         "download",
         spotify_url,
         "--output",
-        f"{DOWNLOAD_DIR}/{{artist}} - {{title}}.{{output-ext}}"
+        f"{DOWNLOAD_DIR}/{DOWNLOAD_FILENAME}.{{output-ext}}"
     ]
 
     app.logger.info(f"Downloading {spotify_url}")
