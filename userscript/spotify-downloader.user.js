@@ -18,7 +18,7 @@
   "use strict";
 
   function getServerUrl() {
-    let url = GM_getValue("server_url");
+    let url = GM_getValue("server_url") ?? "";
     return url.replace(/\/+$/, ""); // Remove trailing slash if present to avoid double slashes
   }
 
