@@ -6,7 +6,7 @@ import os
 load_dotenv()
 HOST = "0.0.0.0"
 PORT = 8000
-DOWNLOAD_DIR = os.getenv("DOWNLOAD_DIR", ".")
+DOWNLOAD_DIR = "./downloads"
 DOWNLOAD_FILENAME = os.getenv("DOWNLOAD_FILENAME", "{artist} - {title}")
 
 app = Flask(__name__)
