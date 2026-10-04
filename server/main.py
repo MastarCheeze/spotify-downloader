@@ -32,17 +32,36 @@ def download():
         f"{DOWNLOAD_DIR}/{{artist}} - {{title}}.{{output-ext}}"
     ]
 
+    app.logger.info(f"Downloading {spotify_url}")
+
     try:
         result = subprocess.run(
             command, capture_output=True, text=True, check=True)
-        print(result)
-        return jsonify({
-            "message": "Track downloaded"
-        }), 200
-    except subprocess.CalledProcessError as err:
+
+        app.logger.info(result.stdout.strip())
+        last_line = result.stdout.strip().split("\n")[-1]
+
+        if "Downloaded" in last_line:
+            track = last_line[12:last_line.index("\"", 12)]
+            return jsonify({
+                "message": "Track downloaded",
+                "track": track,
+            }), 200
+        elif "(duplicate)" in last_line:
+            track = last_line[9:-34]
+            return jsonify({
+                "message": "Track already downloaded",
+                "track": track,
+            }), 200
+        else:
+            return jsonify({
+                "message": "Failed to download track",
+                "details": last_line,
+            }), 500
+    except subprocess.CalledProcessError:
         return jsonify({
             "message": "Failed to download track",
-            "details": err.stderr
+            "details": "SpotDL error",
         }), 500
 
 
